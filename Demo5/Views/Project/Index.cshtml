@@ -1,0 +1,53 @@
+﻿@model IEnumerable<Project>
+@{
+    ViewData["Title"] = "Index";
+}
+<div class="container p-3">
+    <div class="row pt-4">
+        <div class="col-6">
+            <h2>Projects</h2>
+        </div>
+       @if (User.IsInRole("Admin"))
+        {
+            <div class="col-3">
+                <a asp-controller="Project" asp-action="Create" class="btn btn-primary">Create New Project</a>
+        </div>
+        }
+    </div>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Name</th>
+                <th scope="col">Type</th>
+                <th scope="col"></th> 
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var obj in Model)
+            {
+                <tr class="table-active">
+                    <td>
+                        @obj.Id
+                    </td>
+                    <td>
+                        <a asp-controller="Project" asp-action="ProjectIssueList" asp-route-id="@obj.Id">@obj.Name</a>
+                    </td>
+                    <td>
+                        @obj.Type
+                    </td>
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <td>
+
+                            <form method="post" asp-controller="Project" asp-action="Delete" asp-route-id="@obj.Id">
+                                <button type="submit" class="btn btn-primary">Delete</button>
+                            </form>
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

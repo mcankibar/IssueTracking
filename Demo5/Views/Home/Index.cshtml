@@ -1,0 +1,131 @@
+﻿@model IEnumerable<Issue>
+
+<style>
+    /* Mavimsi Renkler */
+    .opened-category {
+        background-color: #3498db;
+        color: #fff;
+    }
+
+    .updated-category {
+        background-color: #2ecc71;
+        color: #fff;
+    }
+
+    .closed-category {
+        background-color: red;
+        color: #fff;
+    }
+
+    
+
+    /* Chart için konteyner boyutu */
+    #chart-container {
+        max-width: 80%; 
+        max-height: 30%; 
+    }
+
+   
+    #statusChart {
+        width: 60% !important;
+        height: 25% !important;
+    }
+</style>
+
+<div class="container mt-5">
+    <h2 class="text-center">Current Status</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-3 opened-category">
+                <div class="card-body">
+                    <h5 class="card-title">Opened</h5>
+                    <ul class="list-group">
+                        @foreach (var issue in Model.Where(i => i.Status.ToString() == "Opened"))
+                        {
+                            <li class="list-group-item">@issue.Title</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-3 updated-category">
+                <div class="card-body">
+                    <h5 class="card-title">Updated</h5>
+                    <ul class="list-group">
+                        @foreach (var issue in Model.Where(i => i.Status.ToString() == "Updated"))
+                        {
+                            <li class="list-group-item">@issue.Title</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-3 closed-category">
+                <div class="card-body">
+                    <h5 class="card-title">Closed</h5>
+                    <ul class="list-group">
+                        @foreach (var issue in Model.Where(i => i.Status.ToString() == "Closed"))
+                        {
+                            <li class="list-group-item">@issue.Title</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    
+   
+    <div class="container mt-5" >
+        
+        <div class="row">
+            
+                <div class="card" style="height:fit-content" >
+                    <div class="card-body">
+                        <h5 class="card-title">Status Distribution</h5>
+                    
+                    <canvas id="statusChart" style="max-width: 400px; max-height: 400px; margin: 0 auto "></canvas>
+                    </div>
+                </div>
+            
+        </div>
+    </div>
+
+   
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+   
+    <script>
+        var ctx = document.getElementById('statusChart').getContext('2d');
+        var data = {
+            labels: ['Opened', 'Updated', 'Closed'],
+            datasets: [{
+                data: [
+        @Model.Count(i => i.Status.ToString() == "Opened"),
+        @Model.Count(i => i.Status.ToString() == "Updated"),
+        @Model.Count(i => i.Status.ToString() == "Closed")
+                    ],
+                backgroundColor: [
+                    'rgb(52, 152, 219)', // Mavi
+                    
+                    
+                    'rgb(46, 204, 113)',  // Yeşil
+                            'rgb(255,0,0)' //  Kırmızı
+                ]
+            }]
+        };
+        var myPieChart = new Chart(ctx, {
+            type: 'pie',
+            data: data
+        });
+    </script>
+
+    
+
+
+    
+
+</div>

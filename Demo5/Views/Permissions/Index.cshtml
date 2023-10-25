@@ -1,0 +1,56 @@
+﻿<div class="container p-3">
+    <div class="row pt-4">
+        <div class="col-6">
+            <h2>Permissions</h2>
+        </div>
+    </div>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Username</th>
+                <th scope="col">Project</th>
+                
+                <th scope="col">Actions</th> 
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Permissions != null)
+            {
+                @foreach (var obj in Model.Permissions)
+                {
+                    <tr class="table-active">
+                        <td>@obj.User.Email</td>
+                        <td>@obj.Project.Name</td>
+                       
+                        <td>
+                            
+                            <form asp-controller="Permissions" asp-action="Delete" method="post">
+                                <input type="hidden" name="id" value="@obj.Id" />
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+    <form asp-controller="Permissions" asp-action="Create" method="post" class="form-group" style="display:inline-flex">
+        <select class="form-select" id="exampleSelect1" style="width:fit-content" name="username">
+            @foreach (var obj in Model.Usernames)
+            {
+                
+                <option>@obj</option>
+            }
+        </select>
+        <select class="form-select" id="exampleSelect1" style="width:fit-content" name="projectname">
+            @foreach (var obj in Model.Projectnames)
+            {
+                <option>@obj</option>
+            }
+        </select>
+        
+        <button class="btn btn-primary" type="submit">Apply</button>
+    </form>
+</div>

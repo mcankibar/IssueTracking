@@ -1,0 +1,52 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+#sidebar {
+    
+    max-width: 130px;
+    min-height: 100vh;
+    position: fixed;
+    
+    padding-top: 20px;
+    background-color: #f8f9fa; /* Ýstediðiniz arka plan rengini buradan ayarlayabilirsiniz */
+    border-right: 1px solid #dee2e6; /* Kenar çubuðu kenar çizgisi rengi */
+}
+
+    /* Sidebar içeriði */
+    #sidebar .nav-link {
+        color: #333; /* Sidebar öðeleri rengi */
+    }
+
+        #sidebar .nav-link:hover {
+            background-color: #007bff; /* Sidebar öðelerine fare üzerine geldiðinde arka plan rengi */
+            color: #fff; /* Sidebar öðeleri rengi fare üzerine geldiðinde */
+        }
+
+.fixed-bottom {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #f8f9fa; /* Footer arka plan rengi */
+    border-top: 1px solid #dee2e6; /* Footer üst çizgisi */
+    padding: 10px 0; /* Footer iç boþluðu */
+    text-align: center; /* Metni ortala */
+}
+
+
+

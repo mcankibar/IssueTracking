@@ -1,0 +1,104 @@
+﻿@model List<IssueTracker.Areas.Identity.Data.SampleUser>
+@inject Microsoft.AspNetCore.Identity.UserManager<IssueTracker.Areas.Identity.Data.SampleUser> UserManager
+
+<h2>Users and Roles</h2>
+
+<div class="table-responsive">
+    <table class="table table-bordered table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>Username</th>
+                <th>Roles</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+            @foreach (var user in Model)
+            {
+                @if(user.isDeleted==false){
+                var userRoles = await UserManager.GetRolesAsync(user);
+                var currentUserRole = userRoles.FirstOrDefault();
+
+                <tr>
+                    <td>@user.UserName</td>
+                    <td>
+                        <form asp-controller="Account" asp-action="EditRole" method="post" style="display: none;" id="roleSelect_@user.Id">
+                            <input type="hidden" name="userId" value="@user.Id" />
+                            <select name="role" class="form-control">
+                                <option value="@userRoles.ElementAt(0)">@userRoles.ElementAt(0)</option>
+                                @if (@userRoles.ElementAt(0) == "Admin")
+                                {
+                                    <option value="Customer">Customer</option>
+                                }
+                                else
+                                {
+                                    <option value="Admin">Admin</option>
+                                }
+                            </select>
+                        </form>
+
+                        <span id="currentRole_@user.Id">@userRoles.ElementAt(0)</span>
+                    </td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <button type="submit" class="btn btn-primary btn-sm" style="display: none;" id="saveButton_@user.Id" onclick="submitForm('@user.Id')">Save</button>
+                            <button type="button" class="btn btn-primary btn-sm" onclick="editRole('@user.Id')" id="editButton_@user.Id">Edit</button>
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="cancelEdit('@user.Id')" style="display: none;" id="cancelButton_@user.Id">Cancel</button>
+                            @if (!User.IsInRole("Admin") || User.Identity.Name != user.UserName)
+                            {
+                                <form asp-controller="Account" asp-action="Delete" method="post" onsubmit="return confirm('Are you sure you want to delete this user?');">
+                                    <input type="hidden" name="userId" value="@user.Id" />
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                            }
+                        </div>
+                    </td>
+                </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function editRole(userId) {
+        var editButton = document.getElementById("editButton_" + userId);
+        editButton.style.display = "none";
+
+        var roleSelect = document.getElementById("roleSelect_" + userId);
+        roleSelect.style.display = "block";
+
+        var saveButton = document.getElementById("saveButton_" + userId);
+        saveButton.style.display = "block";
+
+        var cancelButton = document.getElementById("cancelButton_" + userId);
+        cancelButton.style.display = "block";
+
+        var currentRole = document.getElementById("currentRole_" + userId);
+        currentRole.style.display = "none";
+    }
+
+    function cancelEdit(userId) {
+        var roleSelect = document.getElementById("roleSelect_" + userId);
+        roleSelect.style.display = "none";
+
+        var editButton = document.getElementById("editButton_" + userId);
+        editButton.style.display = "block";
+
+
+        var saveButton = document.getElementById("saveButton_" + userId);
+        saveButton.style.display = "none";
+
+        var cancelButton = document.getElementById("cancelButton_" + userId);
+        cancelButton.style.display = "none";
+
+        var currentRole = document.getElementById("currentRole_" + userId);
+        currentRole.style.display = "inline";
+    }
+
+    function submitForm(userId) {
+        var form = document.getElementById("roleSelect_" + userId);
+        form.submit();
+    }
+</script>

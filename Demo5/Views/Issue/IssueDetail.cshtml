@@ -1,0 +1,360 @@
+﻿@model Issue
+@inject Microsoft.AspNetCore.Identity.UserManager<IssueTracker.Areas.Identity.Data.SampleUser> UserManager
+
+    <style>
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin:0 auto;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Forum Title */
+        .forum-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            
+        }
+
+        /* Topic Info */
+        .topic-info {
+            font-size: 16px;
+            color: #777;
+        }
+
+        /* Topic Title */
+        .topic-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        /* Topic Description */
+        .topic-description {
+            font-size: 18px;
+            color: #444;
+            margin-bottom: 20px;
+        }
+
+        /* Comment Title */
+        .comment-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-top: 30px;
+            margin-bottom: 20px;
+        }
+
+        /* Comment List */
+        .comment-list {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+           
+         
+            
+        }
+
+        .comment {
+            border: 1px solid #ddd;
+            padding: 15px;
+            background-color: #f9f9f9;
+            margin-top: 15px;
+            border-radius: 5px;
+            width:80%;
+            margin-left:15px;
+        }
+
+        /* Comment Text */
+        .comment-text {
+            font-size: 16px;
+            color: #555;
+        }
+        .comment-info{
+            width:130px;
+        }
+
+        /* No Comments */
+        .no-comments {
+            font-size: 18px;
+            color: #777;
+            margin-top: 10px;
+        }
+
+        /* Add Comment Title */
+        .add-comment-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-top: 30px;
+            margin-bottom: 20px;
+        }
+
+        /* Comment Label */
+        .comment-label {
+            font-size: 18px;
+            color: #555;
+        }
+
+        /* Comment Textarea */
+        .comment-textarea {
+            height: 150px;
+            width: 80%;
+            resize: vertical;
+        }
+
+        /* Add Comment Button */
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: #fff;
+            font-size: 18px;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+            .btn-primary:hover {
+                background-color: #0056b3;
+                border-color: #0056b3;
+            }
+
+        /* Right Bottom Text */
+        .right-bottom {
+            font-size: 14px;
+            color: #777;
+           
+            bottom: 10px;
+            right: 10px;
+        }
+
+        .edit-delete-buttons {
+            
+            top: 10px;
+            right: 10px;
+            width:fit-content;
+            height:fit-content;
+            margin:3px;
+        }
+
+        p{
+            margin-top:10px;
+        }
+
+        
+        
+    </style>
+   
+<body>
+   
+
+    <div class="container mt-3" style="margin-left:0">
+        <div class="row" style="margin-bottom:0">
+            <div class="col-8" style="width:100% ;margin-bottom:0">
+                <h2 class="forum-title">@Model.Title</h2>
+                <hr />
+                <ul class="comment-list">
+                    <div class="topic-info" style="display:inline-block">
+                        <img src="/Images/933-9332131_profile-picture-default-png.png" alt="My Photo" width="120" height="100" />
+                        <p> @Model.CreatedBy.UserName.Substring(0,Model.CreatedBy.UserName.IndexOf('@'))</p>
+                        @if (Model.CreatedBy.UserName != null)
+                        {
+                            var createrRole = await UserManager.GetRolesAsync(Model.CreatedBy);
+                            @if (Model.CreatedBy.UserName != "Admin")
+                            {
+                                <p style="color:#73bad6">@createrRole.ElementAt(0)</p>
+                            }else{
+                                <p style="color:red">@createrRole.ElementAt(0)</p>
+                            }
+                         
+                        }
+
+                    </div>
+                    <li class="comment" >
+                        <h4>Description:</h4>
+                        <form method="post" asp-controller="Issue" asp-action="EditIssueText" style="display:none" id="Text_@Model.Id">
+                            <input type="hidden" asp-for="Id" />
+                            <input type="hidden" name="issueId" value="@Model.Id" />
+                            <div class="form-group">
+                                <textarea name="issueText" class="form-control comment-textarea" rows="3">@Model.Description</textarea>
+                            </div>
+                            <input type="hidden" name="issueId" value="@Model.Id" />
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </form>
+                        <p id="current-text" class="issue-text">@Model.Description</p>
+                       
+                        
+                    </li>
+                    @if (User.Identity.IsAuthenticated && User.Identity.Name == Model.CreatedBy.UserName)
+                    {
+
+                        <div class="edit-delete-buttons">
+
+                            <button onclick="editIssue('@Model.Id')" id="editButton_@Model.Id"> <i class="bi bi-pencil-square"></i></button>
+                            <form method="post" asp-controller="Issue" asp-action="DeleteIssue" style="display:inline">
+                                <input type="hidden" name="issueId" value="@Model.Id" />
+                                <button type="submit"><i class="bi bi-trash3"></i></button>
+                            </form>
+                        </div>
+                    }
+                    
+                    
+                </ul>
+                <p class="right-bottom">Opened On: @Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")</p>
+               
+               
+            </div>
+            <hr />
+            
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12" >
+                <h3 class="comment-title">Comments</h3>
+                @if (Model.Comments != null && Model.Comments.Any())
+                {
+
+                    @foreach (var comment in Model.Comments)
+                    {
+                        var userRoles = await UserManager.GetRolesAsync(comment.CreatedBy);
+                        <ul class="comment-list">
+                            
+                            <div class="comment-info">
+                                <img src="/Images/933-9332131_profile-picture-default-png.png" alt="My Photo" width="80" height="72" />
+
+
+
+
+
+                                <p> @comment.CreatedBy.UserName.Substring(0,@comment.CreatedBy.UserName.IndexOf('@'))</p>
+                                @if (@userRoles.ElementAt(0) == "Admin")
+                                {
+                                    <p style="color:#73bad6">@userRoles.ElementAt(0)</p>
+                                }else{
+                                    <p style="color:red">@userRoles.ElementAt(0)</p>
+                                }
+                                
+                                
+                                
+                            </div>
+                            <li class="comment">
+                                <form method="post" asp-controller="Comment" asp-action="EditComment" style="display:none" id="@comment.Id">
+                                    <input type="hidden" asp-for="Id" />
+                                    <input type="hidden" name="commentId" value="@comment.Id" />
+                                    <div class="form-group">
+                                        <textarea name="commentText" class="form-control comment-textarea" rows="3">@comment.Text</textarea>
+                                    </div>
+                                    <input type="hidden" name="issueId" value="@Model.Id" />
+                                    <button type="submit" class="btn btn-primary">Save</button>
+                                </form>
+                                <p id="CurrentText_@comment.Id" class="comment-text">@comment.Text</p>
+                            </li>
+
+
+                            @if (User.Identity.IsAuthenticated && User.Identity.Name == comment.CreatedBy.UserName)
+                            {
+
+                                <div class="edit-delete-buttons">
+
+                                    <button onclick="editComment('@comment.Id')" id="editButton_@comment.Id"> <i class="bi bi-pencil-square"></i></button>
+                                    <form method="post" asp-controller="Comment" asp-action="DeleteComment" style="display:inline">
+                                        <input type="hidden" name="commentId" value="@comment.Id" />
+                                        <button type="submit" ><i class="bi bi-trash3"></i></button>
+                                    </form>
+                                </div>
+                            }
+                            
+                            
+                            
+                        </ul>
+
+                       
+                        <p class="right-bottom">Commented On: @comment.CreatedDate.ToString("dd/MM/yyyy HH:mm")</p>
+                      
+                        <hr />
+                        <br />
+
+                        }
+                    
+                }
+                else
+                {
+                    <p class="no-comments">No comments available.</p>
+                }
+            </div>
+        </div>
+
+        <div class="row mt-4" style="margin-top:0">
+            <div class="col-12">
+                <h3 class="add-comment-title">Add a Comment</h3>
+                <form method="post" asp-controller="Comment" asp-action="AddComment">
+                    <input type="hidden" asp-for="Id" />
+                    <div class="form-group">
+                        <label for="commentText" class="comment-label">Your Comment:</label>
+                        <textarea id="commentText" name="commentText" class="form-control comment-textarea" rows="3"></textarea>
+                    </div>
+                    <input type="hidden" name="issueId" value="@Model.Id" />
+                    <button type="submit" class="btn btn-primary">Add Comment</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function editComment(commentId) {
+            var editButton = document.getElementById("editButton_" + commentId);
+            editButton.style.display = "none";
+
+            var textEdit = document.getElementById(commentId);
+            textEdit.style.display = "block";
+           
+            
+            
+           
+            var currentText = document.getElementById("current-text");
+          
+           
+            currentText.style.display = "none";
+            
+
+        }
+
+        function editIssue(issueId) {
+            var editButton = document.getElementById("editButton_" + issueId);
+            editButton.style.display = "none";
+
+            var textEdit = document.getElementById("Text_"+issueId);
+            textEdit.style.display = "block";
+
+
+
+
+            var currentText = document.getElementById("current-text");
+
+
+            currentText.style.display = "none";
+
+
+        }
+    </script>
+</body>
+
+
+
+
+
+
+
+
+
+
